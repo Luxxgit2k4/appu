@@ -3,7 +3,6 @@ import express from "express";
 import bodyParser from "body-parser";
 configDotenv()
 
-const port = process.env.PORT;
 const appu = express();
 appu.use(bodyParser.json());
 
@@ -38,10 +37,14 @@ appu.post("/tasks", (req, res) => {
 
 appu.get("/tasks", (req, res) => {
   res.json(tasks);
-})
+});
 
+if (process.env.NODE_ENV !== "test") {
+  const port = process.env.PORT;
 appu.listen(port, () => {
   console.log(`Appu server is running on http://localhost:${port}`);
 });
+}
 
+export default appu;
 
