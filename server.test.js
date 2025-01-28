@@ -6,7 +6,7 @@ appu.get("/", (req, res) => res.send("Welcome to Appu - Your Productivity Assist
 describe("Server Tests", () => {
   it("should return the welcome message", async () => {
     const response = await request(appu).get("/");
-    expect(response.statusCode).toBe(200);
+    expect(response.status).toBe(200);
     expect(response.text).toBe("Welcome to Appu - Your Productivity Assistant!");
   });
 });
