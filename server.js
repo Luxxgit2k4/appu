@@ -7,11 +7,31 @@ const appu = express();
 appu.use(bodyParser.json());
 
 const tasks = {
+  allTasks: [],
   urgentImportant: [],
   notUrgentImportant: [],
   urgentNotImportant: [],
   notUrgentNotImportant: [],
 };
+
+function prioritizetasks() {
+  tasks.urgentImportant = [];
+  tasks.notUrgentImportant = [];
+  tasks.urgentNotImportant = [];
+  tasks.notUrgentNotImportant = [];
+
+  for (const task of tasks.allTasks) {
+ if (task.urgent && task.important) {
+    tasks.urgentImportant.push(task.name);
+  } else if (!task.urgent && task.important) {
+    tasks.notUrgentImportant.push(task.name);
+  } else if(task.urgent && !task.important) {
+    tasks.urgentNotImportant.push(task.name);
+  } else {
+    tasks.notUrgentNotImportant.push(task.name);
+  }
+  }
+}
 
 appu.get("/", (req, res) => {
   res.send("Welcome to Appu - Your Productivity Assistant!");
@@ -23,16 +43,32 @@ appu.post("/tasks", (req, res) => {
     return res.status(400).json({ error: "Invalid data!"});
   }
 
-  if (urgent && important) {
-    tasks.urgentImportant.push(name);
-  } else if (!urgent && important) {
-    tasks.notUrgentImportant.push(name);
-  } else if(urgent && !important) {
-    tasks.urgentNotImportant.push(name);
-  } else {
-    tasks.notUrgentNotImportant.push(name);
-  }
+  const taskid = Date.now().toString();
+  const newtask = { id: taskid, name, urgent, important };
+  tasks.allTasks.push(newtask);
+  prioritizetasks();
+
   res.status(201).json({ message: "Task added successfully!", tasks})
+});
+
+appu.patch("/tasks/:id", (req,res) => {
+  const { id } = req.params;
+  const { name, urgent, important } = req.body;
+
+  const taskindex = tasks.allTasks.findIndex(task => task.id === id);
+  if (taskindex === -1) {
+    return res.status(404).json({ error: "Task not found!"});
+  }
+  if (name !== undefined) tasks.allTasks[taskindex].name = name;
+ if (urgent !== undefined) tasks.allTasks[taskindex].urgent = urgent;
+ if (important !== undefined) tasks.allTasks[taskindex].important = important;
+
+  prioritizetasks();
+res.status(200).json({
+  message: "Task updated successfully!",
+  task: tasks.allTasks[taskindex],
+  tasks,
+})
 });
 
 appu.get("/tasks", (req, res) => {
