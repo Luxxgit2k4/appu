@@ -4,12 +4,14 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "start": "node server.js",
+    "cli": "node cli.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "",
+  "description": "APPU CLI and API for Eisenhower Matrix based task prioritization",
   "dependencies": {
     "axios": "^1.7.9",
     "body-parser": "^1.20.3",
